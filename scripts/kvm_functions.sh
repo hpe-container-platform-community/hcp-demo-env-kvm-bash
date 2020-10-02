@@ -55,8 +55,8 @@ function destroy_vm {
     virsh dominfo "${1}" > /dev/null 2>&1
     if [ "$?" -eq 0 ]; then
         echo "Removing existing vm $1"
-        sudo virsh destroy --domain "${1}" 
-        sudo virsh undefine --domain "${1}"
+        virsh destroy --domain "${1}" 
+        virsh undefine --domain "${1}"
         ip=$(get_ip_for_vm ${1})
         [ ! -z "${ip}" ] && sudo sed -i "s/,${ip}//g" ${SYSTEM_PROXY_FILE}
         sed -i "/^${1} /d" "${HOSTS_FILE}"
@@ -86,12 +86,14 @@ function create_network {
 
 function destroy_network {
     set +e
-    net_info=$(virsh net-info ${VIRTUAL_NET_NAME} 2>&1)
+    net_info=$(sudo virsh net-info ${VIRTUAL_NET_NAME} 2>&1)
     if [ "$?" -eq 0 ]; then
         sudo virsh net-destroy ${VIRTUAL_NET_NAME}
         sudo virsh net-undefine ${VIRTUAL_NET_NAME}
         sudo rm -f /etc/NetworkManager/conf.d/localdns.conf
         sudo rm -f /etc/NetworkManager/dnsmasq.d/libvirt_dnsmasq.conf
+        sudo sed -i "/${USER}/d" /etc/qemu-kvm/bridge.conf
+        sudo rm -f /etc/qemu-kvm/${USER}.conf
     fi
     set -e
     # Remove added no_proxy configuration

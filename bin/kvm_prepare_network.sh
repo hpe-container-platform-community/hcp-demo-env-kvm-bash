@@ -20,27 +20,36 @@ cat > ${VIRTUAL_NET_XML_FILE} <<- EOB
 EOB
 
 # Create network
-virsh net-define ${VIRTUAL_NET_XML_FILE}
-virsh net-start ${VIRTUAL_NET_NAME}
-virsh net-autostart ${VIRTUAL_NET_NAME}
+sudo virsh net-define ${VIRTUAL_NET_XML_FILE}
+sudo virsh net-start ${VIRTUAL_NET_NAME}
+sudo virsh net-autostart ${VIRTUAL_NET_NAME}
+echo "allow all" | sudo tee /etc/qemu-kvm/${USER}.conf > /dev/null
+echo "include /etc/qemu-kvm/${USER}.conf" | sudo tee --append /etc/qemu-kvm/bridge.conf
+sudo chown root:${USER} /etc/qemu-kvm/${USER}.conf
+sudo chmod 640 /etc/qemu-kvm/${USER}.conf
 
 # Enable IPv4 forwarding to/from virt-net
 if [ $(grep -c "net.ipv4.ip.forward" /etc/sysctl.conf) = 0 ]; then
-    echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
-    echo "net.ipv4.conf.all.forwarding=1" >> /etc/sysctl.conf
+    echo "net.ipv4.ip_forward=1" | sudo tee -a /etc/sysctl.conf
+    echo "net.ipv4.conf.all.forwarding=1" | sudo tee -a /etc/sysctl.conf
     # sysctl -p
 fi
 
 # Enable DNS resolution for virt-net
-cat > /etc/NetworkManager/conf.d/${VIRTUAL_NET_NAME}.conf <<EOF
+netmanconf=$(cat <<EOF
 [main]
 dns=dnsmasq
 EOF
+)
+
+echo "${netmanconf}" | sudo tee /etc/NetworkManager/conf.d/localdns.conf > /dev/null
 
 # Set bridge interface IP as DNS server for virt-net
-cat > /etc/NetworkManager/dnsmasq.d/ecp_dnsmasq.conf <<EOF
+dnsmasqconf=$(cat <<EOF
 server=/"${DOMAIN}"/${NET}.1
 EOF
+)
+echo "${dnsmasqconf}" | sudo tee /etc/NetworkManager/dnsmasq.d/libvirt_dnsmasq.conf > /dev/null
 
 # Update no_proxy to skip this net
 sudo sed -i "/^export no_proxy/ s/$/,.${DOMAIN},${NET}.0\/24/" ${SYSTEM_PROXY_FILE}

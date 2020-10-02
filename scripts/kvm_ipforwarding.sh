@@ -15,18 +15,18 @@ else
 fi
 
 if [[ "$2" == "on" ]]; then
-    /sbin/iptables -t nat -I PREROUTING -p tcp -d $KVM_HOST_IP --dport 80 -j DNAT --to-destination ${DEST_IP}:80
-    /sbin/iptables -t nat -I PREROUTING -p tcp -d $KVM_HOST_IP --dport 8080 -j DNAT --to-destination ${DEST_IP}:8080
-    /sbin/iptables -t nat -I PREROUTING -p tcp -d $KVM_HOST_IP --dport 443 -j DNAT --to-destination ${DEST_IP}:443
-    /sbin/iptables -I FORWARD -m state -d ${DEST_IP}/24 --state NEW,RELATED,ESTABLISHED -j ACCEPT
+    sudo /sbin/iptables -t nat -I PREROUTING -p tcp -d $KVM_HOST_IP --dport 80 -j DNAT --to-destination ${DEST_IP}:80
+    sudo /sbin/iptables -t nat -I PREROUTING -p tcp -d $KVM_HOST_IP --dport 8080 -j DNAT --to-destination ${DEST_IP}:8080
+    sudo /sbin/iptables -t nat -I PREROUTING -p tcp -d $KVM_HOST_IP --dport 443 -j DNAT --to-destination ${DEST_IP}:443
+    sudo /sbin/iptables -I FORWARD -m state -d ${DEST_IP}/24 --state NEW,RELATED,ESTABLISHED -j ACCEPT
     echo "Port forwarding for ${DEST_IP} on port 80/8080/443 enabled"
 else
     # don't bother if rules dont exist
     set +e
-    /sbin/iptables -t nat -D PREROUTING -p tcp -d $KVM_HOST_IP --dport 80 -j DNAT --to-destination ${DEST_IP}:80
-    /sbin/iptables -t nat -D PREROUTING -p tcp -d $KVM_HOST_IP --dport 8080 -j DNAT --to-destination ${DEST_IP}:8080
-    /sbin/iptables -t nat -D PREROUTING -p tcp -d $KVM_HOST_IP --dport 443 -j DNAT --to-destination ${DEST_IP}:443
-    /sbin/iptables -D FORWARD -m state -d ${DEST_IP}/24 --state NEW,RELATED,ESTABLISHED -j ACCEPT
+    sudo /sbin/iptables -t nat -D PREROUTING -p tcp -d $KVM_HOST_IP --dport 80 -j DNAT --to-destination ${DEST_IP}:80
+    sudo /sbin/iptables -t nat -D PREROUTING -p tcp -d $KVM_HOST_IP --dport 8080 -j DNAT --to-destination ${DEST_IP}:8080
+    sudo /sbin/iptables -t nat -D PREROUTING -p tcp -d $KVM_HOST_IP --dport 443 -j DNAT --to-destination ${DEST_IP}:443
+    sudo /sbin/iptables -D FORWARD -m state -d ${DEST_IP}/24 --state NEW,RELATED,ESTABLISHED -j ACCEPT
     echo "Port forwarding for ${DEST_IP} on port 80/8080/443 disabled"
     set -e
 fi

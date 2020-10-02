@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Top Level Directory for the project
-PROJECT_DIR=/ecp
+PROJECT_DIR=/home/hpeadmin/hcp-demo-env-kvm-bash
 # Directory to store VMs
 VM_DIR="${PROJECT_DIR}"/vms
 OUT_DIR="${PROJECT_DIR}"/generated
@@ -34,8 +34,8 @@ IMAGE_CATALOG="ftp://10.1.1.209/repos/bluedata/*.bin"
 # EPIC vars from AWS scripts
 LOCAL_SSH_PUB_KEY_PATH="${OUT_DIR}/controller.pub_key"
 LOCAL_SSH_PRV_KEY_PATH="${OUT_DIR}/controller.prv_key"
-# Using default gateway device's IP
-CLIENT_CIDR_BLOCK=$(ip a s dev $(ip route show default | cut -d' ' -f5) | awk /'inet / { print $2 }')
+# Using default gateway device's IP (taking first interface on default gateway)
+CLIENT_CIDR_BLOCK=$(ip a s dev $(ip route show default | head -1 | cut -d' ' -f5) | awk /'inet / { print $2 }')
 VPC_CIDR_BLOCK=$CLIENT_CIDR_BLOCK
 REGION=ME
 

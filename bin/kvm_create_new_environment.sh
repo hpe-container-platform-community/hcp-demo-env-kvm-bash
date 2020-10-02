@@ -118,15 +118,15 @@ if [ ! -z "${IMAGE_CATALOG}" ]; then
    fi
 fi
 
-if [ "${CREATE_EIP_GATEWAY}" == "True" ]; then
-   # Switch to gateway
-   ./scripts/kvm_ipforwarding.sh controller off
-   ./scripts/kvm_ipforwarding.sh gw on
-   ## TODO: need to verify network name and bridge interface name
-   # sudo virsh attach-interface --domain gw --type bridge --source virbr0 --model virtio --config --live  
-   # myip=$(virsh domifaddr gw)
-   # GATW_PUB_IP=${myip}
-fi
+# if [ "${CREATE_EIP_GATEWAY}" == "True" ]; then
+#    # Switch to gateway
+#    ./scripts/kvm_ipforwarding.sh controller off
+#    ./scripts/kvm_ipforwarding.sh gw on
+#    ## TODO: need to verify network name and bridge interface name
+#    # sudo virsh attach-interface --domain gw --type bridge --source virbr0 --model virtio --config --live  
+#    # myip=$(virsh domifaddr gw)
+#    # GATW_PUB_IP=${myip}
+# fi
 
 print_term_width '-'
 echo "Run ./generated/get_public_endpoints.sh for all connection details."

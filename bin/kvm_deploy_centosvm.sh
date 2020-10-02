@@ -117,8 +117,13 @@ EOF
     virsh change-media "${1}" sda --eject --config
     # Remove the unnecessary cloud init files
     rm "${USER_DATA}" "${CI_ISO}"
+    # Remove if data disk not needed
+    if [ ${5} -eq 0 ]; then
+      virsh detach-disk --domain ${1} vdb --persistent --config --live
+      virsh detach-disk --domain ${1} vdc --persistent --config --live
+    fi
     # Set to autostart with host
-    sudo virsh autostart ${1}
+    virsh autostart ${1}
     # Completed
     echo "$1 $IP $4" >> "${HOSTS_FILE}"
 

@@ -5,16 +5,51 @@ To re-utilize scripts and processes by https://github.com/hpe-container-platform
 
 ## Pre-requisites
 - CentOS/RHEL 7+ (tested on CentOS 8.2 Host)
-- libvirt, qemu-kvm, libvirt-usertools (!)
+- libvirt, qemu-kvm, libvirt-client, virt-install
+- Python3, openssh, nc, curl, ipcalc, hpecp
+- Passwordless sudo
 
 ## Prepare environment
-Install KVM tools # TODO: should be done as part of pre-requisites script
+- KVM & Qemu
+```bash
+sudo dnf install -y qemu-kvm libvirt libvirt-client
+```
+- virt-install
+```bash
+sudo dnf install -y virt-install
+```
+- python3 & pip3
+```bash
+sudo dnf install -y python3
+```
+- ssh-keygen
+```bash
+sudo dnf install -y openssh
+```
+- nc
+```bash
+sudo dnf install -y nmap-ncat
+```
+- curl
+```bash
+sudo dnf install -y curl
+```
+- ipcalc
+```bash
+pip3 install --user ipcalc six
+```
+- hpecp
+```bash
+pip3 install --user hpecp
+```
+- Edit sudoers file
+
 
 
 ### Collect and customize
 ```bash
-git clone _this_
-cd _this_
+git clone https://github.com/hpe-container-platform-community/hcp-demo-env-kvm-bash.git 
+cd hcp-demo-env-kvm-bash
 vi etc/kvm_config.sh
 ```
 
@@ -105,3 +140,11 @@ Open a browser to gateway (if CREATE_EIP_GATEWAY enabled an ip forwarding rule t
 - [ ] Enable local YUM repo (nfs to avoid downloading packages)
 
 - [ ] Enable mounted image catalog (nfs avoid copying catalog images)
+
+# Troubleshooting 
+
+If you get error for backing disk not accessible "Permission denied", be sure that SE allows permission to all the way up to the backing file _/full/path/to/centos.qcow2_
+
+Replace the full path: <code>sudo setfacl -m u:qemu:rx /full/path/to/</code>
+If file is on NFS share: <code>sudo setsebool virt_use_nfs on</code>
+

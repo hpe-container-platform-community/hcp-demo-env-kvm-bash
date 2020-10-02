@@ -98,6 +98,7 @@ pushd ./bin/experimental > /dev/null
    chmod +x *.sh
 popd > /dev/null 
 
+mkdir -p ./generated || true
 pushd ./generated > /dev/null 
    if [ ! -f hpecp_cli_logging.conf ]; then
       wget https://github.com/hpe-container-platform-community/hcp-demo-env-aws-terraform/raw/master/etc/hpecp_cli_logging.conf
