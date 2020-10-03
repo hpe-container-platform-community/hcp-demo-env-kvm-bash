@@ -35,7 +35,7 @@ LOG_FILE="${PROJECT_DIR}"/generated/bluedata_install_output.txt
 CTRL_PRV_IP=$(get_ip_for_vm "controller")
 CTRL_PRV_HOST="controller"
 CTRL_PRV_DNS=${CTRL_PRV_HOST}.${DOMAIN}
-if [ "${CREATE_EIP_CONTROLLER}" = "False" ]; then
+if [ "${CREATE_EIP_CONTROLLER}" == "False" ]; then
    CTRL_PUB_IP=${CTRL_PRV_IP}
    CTRL_PUB_HOST=${CTRL_PRV_HOST}
    CTRL_PUB_DNS=${CTRL_PRV_DNS}
@@ -102,11 +102,11 @@ fi
 GATW_PRV_IP=$(get_ip_for_vm "gw")
 GATW_PRV_HOST="gw"
 GATW_PRV_DNS=${GATW_PRV_HOST}.${DOMAIN}
-# if [ "${CREATE_EIP_GATEWAY}" = "False" ]; then
+if [ "${CREATE_EIP_GATEWAY}" == "False" ]; then
    GATW_PUB_IP=$GATW_PRV_IP
    GATW_PUB_HOST=$GATW_PRV_HOST
    GATW_PUB_DNS=$GATW_PRV_DNS
-# fi
+fi
 
 [ "$GATW_PRV_IP" ] || ( echo "ERROR: GATW_PRV_IP is empty - is the instance running?" && exit 1 )
 [ "$GATW_PUB_IP" ] || ( echo "ERROR: GATW_PUB_IP is empty - is the instance running?" && exit 1 )

@@ -30,6 +30,12 @@ fi
 # Clean host entries in ~/.ssh/known_hosts
 sed -i "/${NET}./d" -i ~/.ssh/known_hosts
 
+if [ -d ./generated ]; then
+    pushd ./generated > /dev/null
+        rm -f bluedata_install_output.txt* get_public_endpoints.sh ssh_*.sh hpecp_cli.log
+    popd > /dev/null
+fi
+
 # Clean downloaded scripts too
 if [ "$1" = "all" ]; then
     pushd ./scripts > /dev/null
@@ -44,11 +50,10 @@ if [ "$1" = "all" ]; then
     popd > /dev/null
     if [ -d ./generated ]; then
         pushd ./generated > /dev/null
-            rm -f hpecp_cli_logging.conf bluedata_infra_variables.tf bluedata_install_output.txt* \
-                ca-cert.pem ca-key.pem cert.pem controller.prv_key controller.pub_key hpecp.conf key.pem \
-                get_public_endpoints.sh ssh_*.sh hpecp_cli.log
+            rm -f hpecp_cli_logging.conf bluedata_infra_variables.tf \
+                ca-cert.pem ca-key.pem cert.pem controller.prv_key controller.pub_key hpecp.conf key.pem 
         popd > /dev/null
-    fi
+    fi    
 fi
 
 # Finally remove hosts file

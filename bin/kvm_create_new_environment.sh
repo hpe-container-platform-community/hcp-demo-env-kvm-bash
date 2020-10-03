@@ -40,17 +40,18 @@ for (( i = 0; i < ${#hosts[@]}; ++i )); do
    create_vm ${hosts[i]} ${cpus[i]} ${mems[i]} ${roles[i]} ${disks[i]}
 done
 
-if [ ! -z "${BEHIND_PROXY}" ]; then
-   print_header "Updating Proxy settings on all hosts"
-   ./scripts/kvm_set_proxy.sh
-fi
-# To update local no_proxy list
-source ${SYSTEM_PROXY_FILE}
-
 # Get updated variables
 source "./scripts/variables.sh"
+
+if [ "${BEHIND_PROXY}" == "True" ]; then
+   print_header "Updating Proxy settings on all hosts"
+   ./scripts/kvm_set_proxy.sh
+   # To update local no_proxy list
+   sudo sed -i "/^export no_proxy/ s/$/,${GATW_PUB_DNS}/" ${SYSTEM_PROXY_FILE}
+   source ${SYSTEM_PROXY_FILE}
+fi
+
 # Hack for proxy # Need to update after env set via variables.sh
-# sed -i 's/\-\-skipeula/${EPIC_OPTIONS}/g' ./scripts/bluedata_install.sh
 sed -i 's/\-O \${EPIC_FILENAME} \"\${EPIC_DL_URL}\"/-O ${EPIC_FILENAME} \${WGET_OPTIONS} "${EPIC_DL_URL}"/' ./scripts/bluedata_install.sh
 
 if [ "${AD_SERVER_ENABLED}" == "True" ]; then
@@ -75,12 +76,19 @@ print_header "Running ./scripts/post_refresh_or_apply.sh"
 print_header "Installing HCP"
 ./scripts/bluedata_install.sh
 # ready to access from local network, so adding nat/forward rules
-./scripts/kvm_ipforwarding.sh controller on
+# ./scripts/kvm_ipforwarding.sh controller on
 
 print_header "Installing HPECP CLI on Controller"
 ./bin/experimental/install_hpecp_cli.sh 
-
 if [[ -f ./etc/postcreate.sh ]]; then
+#    print_header "Uploading Spark image files to Controller"
+#    ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} << ENDSSH
+# sudo wget --no-proxy -e dotbytes=10M -c -nd -np --no-clobber -P /srv/bluedata/catalog ${IMAGE_CATALOG}/bdcatalog-centos7-bluedata-spark231juphub7xssl-3.4.bin
+# sudo wget --no-proxy -e dotbytes=10M -c -nd -np --no-clobber -P /srv/bluedata/catalog ${IMAGE_CATALOG}/bdcatalog-centos7-bluedata-spark240juphub7xssl-2.8.bin
+# sudo chmod 750 /srv/bluedata/catalog/*
+# sudo chown apache:apache /srv/bluedata/catalog/*
+# sudo systemctl restart bds-controller
+# ENDSSH
    print_header "Found ./etc/postcreate.sh so executing it"
    ./etc/postcreate.sh && mv ./etc/postcreate.sh ./etc/postcreate.sh.completed
 else
@@ -106,17 +114,17 @@ echo "ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} centos@${WRKR
 echo "ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} centos@${WRKR_PRV_IPS[2]} \$1" > ./generated/ssh_host3.sh
 chmod +x ./generated/*.sh
 
-# Download image catalog to controller
-if [ ! -z "${IMAGE_CATALOG}" ]; then
-   echo -n "Do you want to download images from local catalog?"
-   read -n 1 res
-   if [ "$res" == [Yy] ]; then
-      echo "This will take long..."
-      ./generated/ssh_controller.sh "wget --no-proxy -e dotbytes=10M -c -nd -np --no-clobber -P /srv/bluedata/catalog ${IMAGE_CATALOG} && chmod 750 /srv/bluedata/catalog/*"
-   else
-      echo "Skipped catalog download"
-   fi
-fi
+# # Download image catalog to controller
+# if [ ! -z "${IMAGE_CATALOG}" ]; then
+#    echo -n "Do you want to download images from local catalog?"
+#    read -n 1 res
+#    if [ "$res" == [Yy] ]; then
+#       echo "This will take long..."
+#       ./generated/ssh_controller.sh "wget --no-proxy -e dotbytes=10M -c -nd -np --no-clobber -P /srv/bluedata/catalog ${IMAGE_CATALOG} && chmod 750 /srv/bluedata/catalog/*"
+#    else
+#       echo "Skipped catalog download"
+#    fi
+# fi
 
 # if [ "${CREATE_EIP_GATEWAY}" == "True" ]; then
 #    # Switch to gateway

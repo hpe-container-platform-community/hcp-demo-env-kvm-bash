@@ -33,7 +33,7 @@ function create_vm {
     else
         ./bin/kvm_deploy_centosvm.sh $name $cpu $mem $role $disk
         ip=$(get_ip_for_vm "${name}")
-        sleep 30 # give time to start services
+        # sleep 30 # give time to start services
 
         # Upload local yum repo to all hosts
         # if [ ! -z ${LOCAL_YUM_REPO} ]; then

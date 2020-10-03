@@ -112,8 +112,8 @@ pushd ./generated > /dev/null
 popd > /dev/null 
 
 ### Update scripts 
-printf "\nexit 0\n" >> ./scripts/end_user_scripts/embedded_mapr/2_setup_ubuntu_mapr_sssd_and_mapr_client.sh
-printf "\nexit 0\n" >> ./scripts/post_refresh_or_apply.sh
+# printf "\nexit 0\n" >> ./scripts/end_user_scripts/embedded_mapr/2_setup_ubuntu_mapr_sssd_and_mapr_client.sh
+# printf "\nexit 0\n" >> ./scripts/post_refresh_or_apply.sh
 
 # proxy hacks for scripts
 function add_proxy {
