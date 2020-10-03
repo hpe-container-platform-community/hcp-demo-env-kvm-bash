@@ -1,0 +1,4 @@
+generated/*
+scripts/post_refresh_or_apply.sh
+scripts/end_user_scripts/embedded_mapr/2_setup_ubuntu_mapr_sssd_and_mapr_client.sh
+vms/*

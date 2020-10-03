@@ -119,7 +119,7 @@ Open a browser to gateway (if CREATE_EIP_GATEWAY enabled an ip forwarding rule t
 
 # TODO
 
-- [ ] Test with non-root user
+- [x] Test with non-root user
 
 - [ ] Selectively deploy K8s cluster or EPIC cluster
 
@@ -139,7 +139,7 @@ Open a browser to gateway (if CREATE_EIP_GATEWAY enabled an ip forwarding rule t
 
 - [ ] Enable local YUM repo (nfs to avoid downloading packages)
 
-- [ ] Enable mounted image catalog (nfs avoid copying catalog images)
+- [ ] Enable mounted image catalog (nfs to avoid copying catalog images)
 
 # Troubleshooting 
 
