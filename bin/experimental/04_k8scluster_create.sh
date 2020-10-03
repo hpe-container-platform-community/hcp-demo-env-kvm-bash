@@ -38,8 +38,8 @@ echo "Creating k8s cluster with version ${K8S_VERSION} and addons=[istio] | time
 CLUSTER_ID=$(hpecp k8scluster create --name c1 --k8s-version $K8S_VERSION --k8shosts-config "$K8S_WORKER_1:master,$K8S_WORKER_2:worker" --addons [istio])
 
 echo "$CLUSTER_ID"
-
-hpecp k8scluster wait-for-status --id $CLUSTER_ID --status [ready] --timeout-secs 1800
+echo "Started at: $(date)"
+hpecp k8scluster wait-for-status --id $CLUSTER_ID --status [ready] --timeout-secs 3600
 echo "K8S cluster created successfully - ID: ${CLUSTER_ID}"
 
 echo "Adding addon [harbor] | timeout=1800s"
