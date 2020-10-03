@@ -87,6 +87,8 @@ echo "${docker_conf}" | sudo tee /etc/default/docker > /dev/null
 grep "proxy=" /etc/wgetrc > /dev/null || echo "${wgetrc}" | sudo tee -a /etc/wgetrc > /dev/null
 echo "${gitconf}" | sudo tee /etc/gitconfig > /dev/null
 echo "${pipconf}" | sudo tee /etc/pip.conf > /dev/null
+sudo mv /etc/yum.repos.d/CentOS*.repo /tmp/
+sudo wget --no-proxy -P /etc/yum.repos.d/ ${LOCAL_REPO_FILE}
 
 EOF
 

@@ -22,14 +22,14 @@ PROXY_URL_WITH_IP=${PROXY_URL/${hostpart}/${PROXY_IP}}
 SYSTEM_PROXY_FILE="/etc/profile.d/proxy.sh"
 NOPROXY=$(grep "^export no_proxy" ${SYSTEM_PROXY_FILE} | cut -d'=' -f2)
 
-LOCALREPO="http://10.1.1.209/dlg.repo"
+LOCAL_REPO_FILE="http://10.1.1.209/repos/dlg.repo"
 TIMEZONE="Asia/Dubai"
 
 EPIC_FILENAME=hpe-cp-rhel-release-5.1-3011.bin
-EPIC_DL_URL="http://10.1.1.209/ftp/${EPIC_FILENAME}"
+EPIC_DL_URL="ftp://10.1.1.209/${EPIC_FILENAME}"
 EPIC_OPTIONS='--skipeula'
 WGET_OPTIONS=""
-IMAGE_CATALOG="ftp://10.1.1.209/repos/bluedata/*.bin"
+IMAGE_CATALOG="http://10.1.1.209/repos/bluedata"
 
 # EPIC vars from AWS scripts
 LOCAL_SSH_PUB_KEY_PATH="${OUT_DIR}/controller.pub_key"
@@ -44,7 +44,7 @@ CREATE_EIP_CONTROLLER=False
 # CTRL_PUB_IP=
 # CTRL_PUB_HOST=
 # CTRL_PUB_DNS=
-CREATE_EIP_GATEWAY=True
+CREATE_EIP_GATEWAY=False
 # GATW_PUB_IP=$(echo "${CLIENT_CIDR_BLOCK}" | cut -d'/' -f1)
 # GATW_PUB_HOST=ecp-virgo
 # GATW_PUB_DNS="${GATW_PUB_HOST}.dlg.dubai"
