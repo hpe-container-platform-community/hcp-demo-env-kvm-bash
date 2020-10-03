@@ -88,6 +88,7 @@ grep "proxy=" /etc/wgetrc > /dev/null || echo "${wgetrc}" | sudo tee -a /etc/wge
 echo "${gitconf}" | sudo tee /etc/gitconfig > /dev/null
 echo "${pipconf}" | sudo tee /etc/pip.conf > /dev/null
 sudo sed -i 's/^enabled=1/enabled=0/' /etc/yum/pluginconf.d/fastestmirror.conf
+sudo yum install -y deltarpm
 
 EOF
 
