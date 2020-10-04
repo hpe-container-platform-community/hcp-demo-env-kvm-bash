@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 
-# This aims to replicate the automation of deployment for HPE Container Platform on Redhat KVM
+# This aims to replicate the automation of deployment for HPE Container Platform on CentOS KVM
 # Heavily modified from https://github.com/hpe-container-platform-community/hcp-demo-env-aws-terraform/blob/master/bin/create_new_environment_from_scratch.sh
-# Tested on Redhat 8.2 host
-# Modifications done to replace terraform with virsh scripts & cater for running behind corporate proxy
+# Tested on CentOS 8.2 host
 
 set -e # abort on error
 set -u # abort on undefined variable
@@ -18,7 +17,7 @@ echo "LOG: $0 (START) $(date -R)"
 ./scripts/check_prerequisites.sh
 
 source "scripts/functions.sh"
-source "etc/kvm_config.sh"
+# source "etc/kvm_config.sh"
 
 # Need the key pair for paswordless login
 if [[ ! -f  "${LOCAL_SSH_PRV_KEY_PATH}" ]]; then
@@ -42,6 +41,20 @@ done
 
 # Get updated variables
 source "./scripts/variables.sh"
+
+# Update gw network
+if [ "${CREATE_EIP_GATEWAY}" == "True" ]; then
+   sudo virsh attach-interface --domain "gw" --source "${LOCAL_NET_NAME}" --model virtio --config --live --type network
+   sleep 5 # give some time for VM to get the interface
+#####
+   ### TODO: Make this permanent (IP is lost at first reboot)
+#####
+   ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${GATW_PRV_IP} <<ENDSSH
+      sudo ip a add ${GATW_PUB_IP}/24 dev eth1
+      sudo ip link set eth1 up
+ENDSSH
+   sudo /sbin/iptables -I FORWARD -m state -d ${GATW_PUB_IP} --state NEW,RELATED,ESTABLISHED -j ACCEPT
+fi
 
 if [ "${BEHIND_PROXY}" == "True" ]; then
    print_header "Updating Proxy settings on all hosts"
@@ -78,15 +91,11 @@ print_header "Installing HCP"
 
 print_header "Installing HPECP CLI on Controller"
 ./bin/experimental/install_hpecp_cli.sh 
+
+# print_header "Installing demo apps (spark23 and spark24) onto controller from local repo"
+# ./scripts/kvm_upload_demo_apps.sh
+
 if [[ -f ./etc/postcreate.sh ]]; then
-#    print_header "Uploading Spark image files to Controller"
-#    ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} << ENDSSH
-# sudo wget --no-proxy -e dotbytes=10M -c -nd -np --no-clobber -P /srv/bluedata/catalog ${IMAGE_CATALOG}/bdcatalog-centos7-bluedata-spark231juphub7xssl-3.4.bin
-# sudo wget --no-proxy -e dotbytes=10M -c -nd -np --no-clobber -P /srv/bluedata/catalog ${IMAGE_CATALOG}/bdcatalog-centos7-bluedata-spark240juphub7xssl-2.8.bin
-# sudo chmod 750 /srv/bluedata/catalog/*
-# sudo chown apache:apache /srv/bluedata/catalog/*
-# sudo systemctl restart bds-controller
-# ENDSSH
    print_header "Found ./etc/postcreate.sh so executing it"
    ./etc/postcreate.sh && mv ./etc/postcreate.sh ./etc/postcreate.sh.completed
 else

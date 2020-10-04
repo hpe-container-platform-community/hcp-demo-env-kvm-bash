@@ -80,8 +80,11 @@ EOF
       qemu-img create -f qcow2 $DISK3 100M 
     fi
 
+    # Give access so qemu can read disks
+    sudo setfacl -m u:qemu:rx "${VM_DIR}"/"${1}"
+
     # Run installation (detached)
-    virt-install \
+    sudo virt-install \
     --import \
     --name $1 \
     --memory $MEM \
@@ -95,7 +98,7 @@ EOF
     --os-variant centos7.0 \
     --noautoconsole
 
-    MAC=$(virsh dumpxml $1 | awk -F\' '/mac address/ {print $2}')
+    MAC=$(sudo virsh dumpxml $1 | awk -F\' '/mac address/ {print $2}')
     
     echo -n "Waiting for IP "
     while true
@@ -114,16 +117,16 @@ EOF
     echo
     # Eject cdrom
     # echo "$(date -R) Cleaning up cloud-init..."
-    virsh change-media "${1}" sda --eject --config
+    sudo virsh change-media "${1}" sda --eject --config
     # Remove the unnecessary cloud init files
-    rm "${USER_DATA}" "${CI_ISO}"
+    sudo rm -f "${USER_DATA}" "${CI_ISO}"
     # Remove if data disk not needed
     if [ ${5} -eq 0 ]; then
-      virsh detach-disk --domain ${1} vdb --persistent --config --live
-      virsh detach-disk --domain ${1} vdc --persistent --config --live
+      sudo virsh detach-disk --domain ${1} vdb --persistent --config --live
+      sudo virsh detach-disk --domain ${1} vdc --persistent --config --live
     fi
     # Set to autostart with host
-    virsh autostart ${1}
+    sudo virsh autostart ${1}
     # Completed
     echo "$1 $IP $4" >> "${HOSTS_FILE}"
 

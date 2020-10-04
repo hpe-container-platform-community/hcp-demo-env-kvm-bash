@@ -27,7 +27,7 @@ function create_vm {
     role=$4
     disk=$5
     set +e
-    vm=$(virsh dominfo $1)
+    vm=$(sudo virsh dominfo $1)
     if [ "$?" -eq 0 ]; then
         echo "Reusing existing VM $1"
     else
@@ -52,11 +52,11 @@ function create_vm {
 # Provide the VM name (domain in virsh) as argument
 function destroy_vm {
     set +e 
-    virsh dominfo "${1}" > /dev/null 2>&1
+    sudo virsh dominfo "${1}" > /dev/null 2>&1
     if [ "$?" -eq 0 ]; then
         echo "Removing existing vm $1"
-        virsh destroy --domain "${1}" 
-        virsh undefine --domain "${1}"
+        sudo virsh destroy --domain "${1}" 
+        sudo virsh undefine --domain "${1}"
         ip=$(get_ip_for_vm ${1})
         [ ! -z "${ip}" ] && sudo sed -i "s/,${ip}//g" ${SYSTEM_PROXY_FILE}
         sed -i "/^${1} /d" "${HOSTS_FILE}"
@@ -69,7 +69,7 @@ function destroy_vm {
 
 function create_network {
     set +e # Don't fail if network can't be found
-    net_info=$(virsh net-info ${VIRTUAL_NET_NAME} 2>&1)
+    net_info=$(sudo virsh net-info ${VIRTUAL_NET_NAME} 2>&1)
     if [ "$?" -eq 0 ]; then
         echo "Checking bridge name for match"
         if [[ $(echo $net_info | cut -d" " -f12) == ${BRIDGE} ]]; then

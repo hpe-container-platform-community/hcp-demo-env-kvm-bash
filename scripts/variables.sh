@@ -148,12 +148,12 @@ fi
 
 # Carry NOPROXY across scripts
 if [ -f ${SYSTEM_PROXY_FILE} ]; then
-   NOPROXY=$(grep "export no_proxy" ${SYSTEM_PROXY_FILE} | cut -d'=' -f2),${GATW_PUB_DNS}
+   NOPROXY=$(grep "export no_proxy" ${SYSTEM_PROXY_FILE} | cut -d'=' -f2)
 fi
 
 if [ ${BEHIND_PROXY} ]; then
    WGET_OPTIONS="--no-proxy"
-   EPIC_OPTIONS="${EPIC_OPTIONS} --proxy ${PROXY_URL_WITH_IP} --no-proxy-ips \"${NOPROXY}\""
+   EPIC_OPTIONS="${EPIC_OPTIONS} --proxy ${PROXY_URL_WITH_IP} --no-proxy-ips \"${NOPROXY},${GATW_PUB_DNS}\""
 fi
 
 if [[ $was_x_set == 1 ]]; then
