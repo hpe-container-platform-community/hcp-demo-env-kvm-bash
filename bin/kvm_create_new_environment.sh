@@ -7,7 +7,7 @@
 
 set -e # abort on error
 set -u # abort on undefined variable
-set -x
+set +x
 
 source "scripts/kvm_functions.sh"
 echo "LOG: $0 (START) $(date -R)"

@@ -87,8 +87,10 @@ echo "${docker_conf}" | sudo tee /etc/default/docker > /dev/null
 grep "proxy=" /etc/wgetrc > /dev/null || echo "${wgetrc}" | sudo tee -a /etc/wgetrc > /dev/null
 echo "${gitconf}" | sudo tee /etc/gitconfig > /dev/null
 echo "${pipconf}" | sudo tee /etc/pip.conf > /dev/null
-sudo sed -i 's/^enabled=1/enabled=0/' /etc/yum/pluginconf.d/fastestmirror.conf
+# sudo sed -i 's/^enabled=1/enabled=0/' /etc/yum/pluginconf.d/fastestmirror.conf
 sudo yum install -y deltarpm
+sudo yum clean all
+sudo yum --enablerepo=updates clean metadata
 
 EOF
 
