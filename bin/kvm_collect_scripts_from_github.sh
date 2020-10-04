@@ -56,8 +56,6 @@ popd > /dev/null # scripts
 pushd ./etc > /dev/null 
    if [ ${RUN_POST_CREATE} -a ! -f postcreate.sh ]; then
       wget -O postcreate.sh https://github.com/hpe-container-platform-community/hcp-demo-env-aws-terraform/raw/master/etc/postcreate.sh_template
-      # Replace ip forward/nat rules to use gateway instead of controller
-      sed -i  "/.\/bin\/experimental\/02_gateway_add.sh/a .\/scripts\/kvm_ipforwarding.sh controller off\n.\/scripts\/kvm_ipforwarding.sh gateway on" postcreate.sh
       chmod +x *.sh
    fi
 popd > /dev/null 
@@ -72,7 +70,6 @@ pushd ./bin/experimental > /dev/null
    [ ! -f install_hpecp_cli.sh ] && wget https://github.com/hpe-container-platform-community/hcp-demo-env-aws-terraform/raw/master/bin/experimental/install_hpecp_cli.sh
    [ ! -f 01_configure_global_active_directory.sh ] && wget https://github.com/hpe-container-platform-community/hcp-demo-env-aws-terraform/raw/master/bin/experimental/01_configure_global_active_directory.sh
    [ ! -f 02_gateway_add.sh ] && wget https://github.com/hpe-container-platform-community/hcp-demo-env-aws-terraform/raw/master/bin/experimental/02_gateway_add.sh
-   # sed -i '/hpecp lock create/a hpecp lock list\nsleep 15\n' 02_gateway_add.sh
    if [ ! -f 03_k8sworkers_add.sh ]; then
       wget https://github.com/hpe-container-platform-community/hcp-demo-env-aws-terraform/raw/master/bin/experimental/03_k8sworkers_add.sh
       # update disk definitions
@@ -83,7 +80,6 @@ pushd ./bin/experimental > /dev/null
    [ ! -f 05_kubedirector_spark_create.sh ] && wget https://github.com/hpe-container-platform-community/hcp-demo-env-aws-terraform/raw/master/bin/experimental/05_kubedirector_spark_create.sh
    if [ ! -f epic_workers_add.sh ]; then
       wget https://github.com/hpe-container-platform-community/hcp-demo-env-aws-terraform/raw/master/bin/experimental/epic_workers_add.sh
-      # sed -i '/hpecp lock create/a hpecp lock list\nsleep 15\n' epic_workers_add.sh
       # update disk definitions
       sudo sed -i 's/nvme1n1/vdb/g' epic_workers_add.sh
       sudo sed -i 's/nvme2n1/vdc/g' epic_workers_add.sh
@@ -111,28 +107,14 @@ pushd ./generated > /dev/null
    
 popd > /dev/null 
 
-### Update scripts 
-# printf "\nexit 0\n" >> ./scripts/end_user_scripts/embedded_mapr/2_setup_ubuntu_mapr_sssd_and_mapr_client.sh
-# printf "\nexit 0\n" >> ./scripts/post_refresh_or_apply.sh
-
 # proxy hacks for scripts
 function add_proxy {
-   # sed -i -r 's/(sudo pip install --upgrade) (.*)/\1 --proxy \$PROXY_URL \2/' ./scripts/bluedata_install.sh
-   # sed -i '/sudo yum install/i \\tgit config --global url.https://github.com/.insteadOf git://github.com/\n\tgit config --global --add http.proxy \$PROXY_URL\n\tgit config --global --add https.proxy \$PROXY_URL' ./bin/experimental/install_hpecp_cli.sh
-   # sed -i -r 's/(pip install --upgrade) (.*)/\1 --proxy \$PROXY_URL \2/' ./bin/experimental/install_hpecp_cli.sh
    ## This is needed inside docker (need to check/verify if there's a better way)
    sed -i 's/wget https:/https_proxy=http:\/\/10.1.1.3:3128 wget https:/' ./scripts/end_user_scripts/embedded_mapr/3_setup_datatap_new.sh
 }
 function remove_proxy {
    echo "remove me"
    sed -i 's/https_proxy=http:\/\/10.1.1.3:3128 wget https:/wget https:/' ./scripts/end_user_scripts/embedded_mapr/3_setup_datatap_new.sh   
-   # sed -i -r 's/(sudo pip install --upgrade --proxy \$PROXY_URL) (.*)/sudo pip install --upgrade \2/' ./scripts/bluedata_install.sh
-   # sed -i '/\$PROXY_URL/d' ./bin/experimental/install_hpecp_cli.sh
-   # sed -i '/.insteadOf/d' ./bin/experimental/install_hpecp_cli.sh
-   # sed -i -r 's/(pip install --upgrade --proxy \$PROXY_URL) (.*)/pip install --upgrade \2/' ./bin/experimental/install_hpecp_cli.sh
-   # if [ -f ./etc/postcreate.sh ]; then
-   #    sed -i '/http_proxy/d' ./etc/postcreate.sh
-   # fi
 }
 
 if [ "$BEHIND_PROXY" == "True" ]; then

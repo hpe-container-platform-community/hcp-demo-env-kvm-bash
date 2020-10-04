@@ -75,8 +75,6 @@ print_header "Running ./scripts/post_refresh_or_apply.sh"
 
 print_header "Installing HCP"
 ./scripts/bluedata_install.sh
-# ready to access from local network, so adding nat/forward rules
-# ./scripts/kvm_ipforwarding.sh controller on
 
 print_header "Installing HPECP CLI on Controller"
 ./bin/experimental/install_hpecp_cli.sh 
