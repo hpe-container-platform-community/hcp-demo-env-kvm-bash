@@ -62,6 +62,8 @@ function destroy_vm {
         sed -i "/^${1} /d" "${HOSTS_FILE}"
         # wait for VM to be gone - avoid open file errors
         sleep 1
+        sudo virsh pool-destroy --pool "${1}" 
+        sudo virsh pool-undefine --pool "${1}"
     fi
     rm -rf "${VM_DIR}"/"${1}"/
     set -e
