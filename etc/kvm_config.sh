@@ -2,41 +2,34 @@
 
 # Top Level Directory for the project - all scripts should run at here
 PROJECT_DIR=/home/hpeadmin/hcp-demo-env-kvm-bash
-# Where to store VMs
+# Where to store VMs, need to provide access to qemu user in selinux context (see README#FAQ)
 VM_DIR="${PROJECT_DIR}"/vms
 # Output files for the project - you'll find everything you need to connect to ECP here
 OUT_DIR="${PROJECT_DIR}"/generated
 # Deployed hosts are tracked here - format: "hostname - IP address - role"
 HOSTS_FILE=${OUT_DIR}/hosts
 # Backing file image for VMs (CentOS-7-x86_64-GenericCloud-2003.qcow2)
+#you'll need to provide access to qemu user in selinux context
 CENTOS_IMAGE_FILE=/files/CentOS-7-x86_64-GenericCloud-2003.qcow2
 # Environment settings
 BEHIND_PROXY=True
 PROXY_URL="http://proxy.dlg.dubai:3128"
-# Convert proxy_url to ip (mainly for containers)
-hostpart=$(echo ${PROXY_URL} | awk -F[/:] '{print $4}')
-PROXY_IP=$(getent ahostsv4 $(echo $hostpart) | head -1 | cut -d' ' -f1)
-PROXY_URL_WITH_IP=${PROXY_URL/${hostpart}/${PROXY_IP}}
-# Initialize with local host's no_proxy
-SYSTEM_PROXY_FILE="/etc/profile.d/proxy.sh"
-NOPROXY=$(grep "^export no_proxy" ${SYSTEM_PROXY_FILE} | cut -d'=' -f2)
 # Local repository for yum installs
-LOCAL_REPO_FILE="http://10.1.1.209/repos/dlg.repo"
-# Set your timezone
-TIMEZONE="Asia/Dubai"
+LOCAL_REPO_FILE="http://www.dlg.dubai/repos/dlg.repo"
 # Binary file for installer
 EPIC_FILENAME=hpe-cp-rhel-release-5.1-3011.bin
-EPIC_DL_URL="ftp://10.1.1.209/${EPIC_FILENAME}"
+EPIC_DL_URL="ftp://ftp.dlg.dubai/${EPIC_FILENAME}"
 # To be used/updated if BEHIND_PROXY
 EPIC_OPTIONS='--skipeula'
 WGET_OPTIONS=""
-IMAGE_CATALOG="http://10.1.1.209/repos/bluedata"
+IMAGE_CATALOG="http://www.dlg.dubai/repos/bluedata"
 
 # Update access for local network (otherwise ECP will be accessible only within host machine)
 CREATE_EIP_CONTROLLER=False
 # CTRL_PUB_IP=
 # CTRL_PUB_HOST=
 # CTRL_PUB_DNS=
+
 CREATE_EIP_GATEWAY=True
 LOCAL_DOMAIN=dlg.dubai
 LOCAL_NET_NAME=dlgnet
@@ -94,3 +87,15 @@ if [ "${AD_SERVER_ENABLED}" == "True" ]; then
     roles+=('ad')
     disks+=(0)
 fi
+
+# Set your timezone
+TIMEZONE="Asia/Dubai"
+
+# Calculated
+# Convert proxy_url to ip (mainly for containers)
+hostpart=$(echo ${PROXY_URL} | awk -F[/:] '{print $4}')
+PROXY_IP=$(getent ahostsv4 $(echo $hostpart) | head -1 | cut -d' ' -f1)
+PROXY_URL_WITH_IP=${PROXY_URL/${hostpart}/${PROXY_IP}}
+# Initialize with local host's no_proxy
+SYSTEM_PROXY_FILE="/etc/profile.d/proxy.sh"
+NOPROXY=$(grep "^export no_proxy" ${SYSTEM_PROXY_FILE} | cut -d'=' -f2)

@@ -33,17 +33,9 @@ function create_vm {
     else
         ./bin/kvm_deploy_centosvm.sh $name $cpu $mem $role $disk
         ip=$(get_ip_for_vm "${name}")
-        # sleep 30 # give time to start services
-
-        # Upload local yum repo to all hosts
-        # if [ ! -z ${LOCAL_YUM_REPO} ]; then
-        #     ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${ip} "sudo yum-config-manager --add-repo ${LOCAL_YUM_REPO} && sudo yum-config-manager --disablerepo \* --enablerepo dlg\*"
-        # fi
         # and update no_proxy
         if [ "${BEHIND_PROXY}" == "True" ]; then
-            # Only update local host (variables.sh takes from system proxy file) and it is updated by kvm_set_proxy.sh on all hosts
             sudo sed -i "/^export no_proxy/ s/$/,${ip}/" ${SYSTEM_PROXY_FILE}
-            # ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${ip} "sudo sed -i \"/export no_proxy/ s/$/,${ip}/\" ${SYSTEM_PROXY_FILE}"
         fi
     fi
     set -e
@@ -96,6 +88,11 @@ function destroy_network {
         sudo rm -f /etc/NetworkManager/dnsmasq.d/libvirt_dnsmasq.conf
         sudo sed -i "/${USER}/d" /etc/qemu-kvm/bridge.conf
         sudo rm -f /etc/qemu-kvm/${USER}.conf
+        if [ "${CREATE_EIP_GATEWAY}" == "True" ]; then
+            sudo virsh net-destroy ${LOCAL_NET_NAME}
+            sudo virsh net-undefine ${LOCAL_NET_NAME}
+        fi
+
     fi
     set -e
     # Remove added no_proxy configuration

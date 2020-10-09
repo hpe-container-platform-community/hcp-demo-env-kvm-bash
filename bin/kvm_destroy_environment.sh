@@ -12,11 +12,11 @@ set -x
 source "scripts/kvm_functions.sh"
 
 # Delete ip forwarding rules
-sudo ./scripts/kvm_ipforwarding.sh controller off
+# sudo ./scripts/kvm_ipforwarding.sh controller off
 sudo ./scripts/kvm_ipforwarding.sh gateway off
 
 ### Remove Network
-destroy_network 
+destroy_network
 
 ### Remove VMs
 if [ -d ${VM_DIR} ]; then
