@@ -91,6 +91,7 @@ function destroy_network {
         if [ "${CREATE_EIP_GATEWAY}" == "True" ]; then
             sudo virsh net-destroy ${LOCAL_NET_NAME}
             sudo virsh net-undefine ${LOCAL_NET_NAME}
+            sudo sed -i "s/,${GATW_PUB_DNS}//g" ${SYSTEM_PROXY_FILE}
         fi
 
     fi

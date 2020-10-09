@@ -29,6 +29,9 @@ fi
 
 # Clean host entries in ~/.ssh/known_hosts
 sed -i "/${NET}./d" -i ~/.ssh/known_hosts
+if [ "${CREATE_EIP_GATEWAY}" == "True" ]; then
+    sed -i "/${GATW_PUB_IP}./d" -i ~/.ssh/known_hosts
+fi
 
 if [ -d ./generated ]; then
     pushd ./generated > /dev/null

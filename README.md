@@ -125,9 +125,7 @@ Open a browser to gateway (if CREATE_EIP_GATEWAY enabled an ip forwarding rule t
 
 - [ ] Attach to GPU on host
 
-- [ ] Public IP via 
-  - [ ] Attached to passthrough host interface
-  - [ ] Attached to host bridge interface
+- [x] Public IP via host interface
 
 - [ ] Enable RDP host
 
