@@ -54,7 +54,7 @@ pushd ./scripts > /dev/null
 popd > /dev/null # scripts
 
 pushd ./etc > /dev/null 
-   if [ ${RUN_POST_CREATE} -a ! -f postcreate.sh ]; then
+   if [ ! -f postcreate.sh ]; then
       wget -O postcreate.sh https://github.com/hpe-container-platform-community/hcp-demo-env-aws-terraform/raw/master/etc/postcreate.sh_template
       chmod +x *.sh
    fi

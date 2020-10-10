@@ -38,7 +38,7 @@ fi
 
 if [ -d ./generated ]; then
     pushd ./generated > /dev/null
-        rm -f bluedata_install_output.txt* get_public_endpoints.sh ssh_*.sh hpecp_cli.log
+        rm -f bluedata_install_output.txt* get_public_endpoints.sh ssh_*.sh hpecp_cli.log hpecp.conf
     popd > /dev/null
 fi
 
