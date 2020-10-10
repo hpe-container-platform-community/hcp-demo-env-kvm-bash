@@ -31,6 +31,9 @@ fi
 sed -i "/${NET}./d" -i ~/.ssh/known_hosts
 if [ "${CREATE_EIP_GATEWAY}" == "True" ]; then
     sed -i "/${GATW_PUB_IP}./d" -i ~/.ssh/known_hosts
+    # if [ $(ip address | grep ${GATW_PUB_IP} | wc -l) -eq 1 ]; then
+    #     sudo ip address del "${GATW_PUB_IP}/24" dev ${HOST_INTERFACE}
+    # fi
 fi
 
 if [ -d ./generated ]; then
@@ -39,14 +42,14 @@ if [ -d ./generated ]; then
     popd > /dev/null
 fi
 
-# Clean downloaded scripts too
+# Clean downloaded scripts and other generated files too
 if [ "$1" = "all" ]; then
     pushd ./scripts > /dev/null
         rm -rf end_user_scripts check_prerequisites.sh functions.sh bluedata_install.sh \
             post_refresh_or_apply.sh mapr_install.sh mapr_update.sh verify_ad_server_config.sh 
     popd > /dev/null
     pushd ./etc > /dev/null
-        rm -f postcreate.sh hpecp_cli_logging.conf
+        rm -f postcreate.sh postcreate.sh.completed hpecp_cli_logging.conf
     popd > /dev/null
     pushd ./bin > /dev/null
         rm -rf df-cluster-acl-ad_admin1.sh experimental

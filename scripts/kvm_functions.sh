@@ -89,8 +89,6 @@ function destroy_network {
         sudo sed -i "/${USER}/d" /etc/qemu-kvm/bridge.conf
         sudo rm -f /etc/qemu-kvm/${USER}.conf
         if [ "${CREATE_EIP_GATEWAY}" == "True" ]; then
-            sudo virsh net-destroy ${LOCAL_NET_NAME}
-            sudo virsh net-undefine ${LOCAL_NET_NAME}
             sudo sed -i "s/,${GATW_PUB_DNS}//g" ${SYSTEM_PROXY_FILE}
         fi
 

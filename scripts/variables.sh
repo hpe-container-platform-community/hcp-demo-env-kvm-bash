@@ -118,7 +118,7 @@ fi
 WORKER_COUNT=$(grep -c "host" "${HOSTS_FILE}")
 
 WRKR_PRV_IPS=( $(get_ip_for_vm "host") )
-WRKR_PUB_IPS=$WRKR_PRV_IPS
+WRKR_PUB_IPS=${WRKR_PRV_IPS[@]}
 
 if [[ "$MAPR_CLUSTER1_COUNT" == "3" ]]; then
    MAPR_CLUSTER1_HOSTS_PRV_IPS =$(grep mapr1 ${HOSTS_FILE})

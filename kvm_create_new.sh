@@ -44,16 +44,13 @@ source "./scripts/variables.sh"
 
 # Update gw network
 if [ "${CREATE_EIP_GATEWAY}" == "True" ]; then
-   sudo virsh attach-interface --domain "gw" --source "${LOCAL_NET_NAME}" --model virtio --config --live --type network
-   sleep 5 # give some time for VM to get the interface
-#####
-   ### TODO: Make this permanent (IP is lost at first reboot)
-#####
+   # sudo ip address add ${GATW_PUB_IP}/24 dev ${HOST_INTERFACE}
+
    ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${GATW_PRV_IP} <<ENDSSH
       sudo ip a add ${GATW_PUB_IP}/24 dev eth1
       sudo ip link set eth1 up
 ENDSSH
-   sudo /sbin/iptables -I FORWARD -m state -d ${GATW_PUB_IP} --state NEW,RELATED,ESTABLISHED -j ACCEPT
+   # sudo /sbin/iptables -I FORWARD -m state -d ${GATW_PUB_IP} --state NEW,RELATED,ESTABLISHED -j ACCEPT
 fi
 
 if [ "${BEHIND_PROXY}" == "True" ]; then

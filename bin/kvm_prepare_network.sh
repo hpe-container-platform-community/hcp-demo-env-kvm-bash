@@ -54,22 +54,6 @@ echo "${dnsmasqconf}" | sudo tee /etc/NetworkManager/dnsmasq.d/libvirt_dnsmasq.c
 # Update no_proxy to skip this net
 sudo sed -i "/^export no_proxy/ s/$/,.${DOMAIN},${NET}.0\/24/" ${SYSTEM_PROXY_FILE}
 
-# Setup bridged/routed network for gateway
-if [ "${CREATE_EIP_GATEWAY}" == "True" ]; then
-    cat > ${VIRTUAL_NET_XML_FILE} <<- EOB
-<network>
-    <name>${LOCAL_NET_NAME}</name>
-    <forward mode="bridge" >
-        <interface dev='${LOCAL_NET_DEVICE}'/>
-    </forward>
-</network>
-EOB
-    sudo virsh net-define ${VIRTUAL_NET_XML_FILE}
-    sudo virsh net-start ${LOCAL_NET_NAME}
-    sudo virsh net-autostart ${LOCAL_NET_NAME}
-
-fi
-
 sudo systemctl restart NetworkManager
 
 exit 0

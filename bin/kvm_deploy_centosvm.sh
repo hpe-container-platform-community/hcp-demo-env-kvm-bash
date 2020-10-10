@@ -83,6 +83,12 @@ EOF
     # Give access so qemu can read disks
     sudo setfacl -m u:qemu:rx "${VM_DIR}"/"${1}"
 
+    # add public interface if gateway
+    public_int=""
+    if [ "${1}" == "gw" ] && [ "${CREATE_EIP_GATEWAY}" == "True" ]; then
+      public_int="--network bridge=${PUBLIC_BRIDGE},model=virtio"
+    fi
+
     # Run installation (detached)
     sudo virt-install \
     --import \
@@ -93,12 +99,12 @@ EOF
     --disk "${DISK2}",format=qcow2,bus=virtio \
     --disk "${DISK3}",format=qcow2,bus=virtio \
     --disk "${CI_ISO}",device=cdrom \
-    --network bridge="${BRIDGE}",model=virtio \
+    --network bridge="${BRIDGE}",model=virtio ${public_int} \
     --os-type Linux \
     --os-variant centos7.0 \
     --noautoconsole
 
-    MAC=$(sudo virsh dumpxml $1 | awk -F\' '/mac address/ {print $2}')
+    MAC=$(sudo virsh dumpxml $1 | awk -F\' '/mac address/ {print $2}' | head -n 1)
     
     echo -n "Waiting for IP "
     while true

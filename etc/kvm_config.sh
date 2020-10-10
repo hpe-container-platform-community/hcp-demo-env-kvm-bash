@@ -26,14 +26,10 @@ IMAGE_CATALOG="http://www.dlg.dubai/repos/bluedata"
 
 # Update access for local network (otherwise ECP will be accessible only within host machine)
 CREATE_EIP_CONTROLLER=False
-# CTRL_PUB_IP=
-# CTRL_PUB_HOST=
-# CTRL_PUB_DNS=
 
 CREATE_EIP_GATEWAY=True
 LOCAL_DOMAIN=dlg.dubai
-LOCAL_NET_NAME=dlgnet
-LOCAL_NET_DEVICE=eno2
+PUBLIC_BRIDGE="virbr20" # this should exist on host (https://lukas.zapletalovi.com/2015/09/fedora-22-libvirt-with-bridge.html)
 GATW_PUB_IP=10.1.1.22
 GATW_PUB_HOST=ecpgw1
 GATW_PUB_DNS="${GATW_PUB_HOST}.${LOCAL_DOMAIN}"
@@ -46,7 +42,8 @@ CA_CERT="${OUT_DIR}/ca-cert.pem"
 LOCAL_SSH_PUB_KEY_PATH="${OUT_DIR}/controller.pub_key"
 LOCAL_SSH_PRV_KEY_PATH="${OUT_DIR}/controller.prv_key"
 # Using default gateway device's IP (taking first interface on default gateway)
-CLIENT_CIDR_BLOCK=$(ip a s dev $(ip route show default | head -1 | cut -d' ' -f5) | awk /'inet / { print $2 }')
+HOST_INTERFACE=$(ip route show default | head -1 | cut -d' ' -f5)
+CLIENT_CIDR_BLOCK=$(ip a s dev ${HOST_INTERFACE} | awk /'inet / { print $2 }')
 VPC_CIDR_BLOCK=$CLIENT_CIDR_BLOCK
 # Not used
 REGION=ME

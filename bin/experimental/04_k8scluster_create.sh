@@ -34,7 +34,7 @@ fi
 
 K8S_VERSION=$(hpecp k8scluster k8s-supported-versions --major-filter 1 --minor-filter 17 --output text)
 
-echo "Creating k8s cluster with version ${K8S_VERSION} and addons=[istio] | timeout=1800s"
+echo "Creating k8s cluster with version ${K8S_VERSION} and addons=[istio] | timeout=3600s"
 CLUSTER_ID=$(hpecp k8scluster create --name c1 --k8s-version $K8S_VERSION --k8shosts-config "$K8S_WORKER_1:master,$K8S_WORKER_2:worker" --addons [istio])
 
 echo "$CLUSTER_ID"
