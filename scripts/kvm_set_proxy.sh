@@ -18,6 +18,7 @@ echo "No proxy set to: ${NOPROXY}"
 hosts=$(<${HOSTS_FILE})
 
 for host in ${hosts[@]};do
+{
 # while IFS= read -r host; do
     ip=$(echo ${host} | awk ' { print $2 } ' )
     echo "Updating ${ip} for proxy settings"
@@ -96,5 +97,10 @@ sudo yum clean all -q
 # sudo yum --enablerepo=updates clean metadata -q
 
 EOF
+}&
 
 done # < ${HOSTS_FILE}
+
+wait # for all tasks to finish before returning
+
+exit 0
