@@ -30,7 +30,7 @@ fi
 
 # Local settings
 TIMEZONE="Asia/Dubai"
-CENTOS_IMAGE_FILE=/files/CentOS-7-x86_64-GenericCloud-2003.qcow2
+CENTOS_IMAGE_FILE="/data/CentOS-7-x86_64-GenericCloud-2003.qcow2"
 EPIC_FILENAME=hpe-cp-rhel-release-5.1-3011.bin
 EPIC_DL_URL="ftp://ftp.dlg.dubai/${EPIC_FILENAME}"
 
@@ -72,4 +72,7 @@ CREATE_EIP_RDP_LINUX_SERVER=False
 hostpart=$(echo ${PROXY_URL} | awk -F[/:] '{print $4}')
 PROXY_IP=$(getent ahostsv4 $(echo $hostpart) | head -1 | cut -d' ' -f1)
 PROXY_URL_WITH_IP=${PROXY_URL/${hostpart}/${PROXY_IP}}
-
+if [ ${BEHIND_PROXY} ]; then
+   WGET_OPTIONS="--no-proxy"
+   EPIC_OPTIONS="${EPIC_OPTIONS} --proxy ${PROXY_URL_WITH_IP} --no-proxy-ips \"${NOPROXY},${GATW_PUB_DNS}\""
+fi

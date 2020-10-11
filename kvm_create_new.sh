@@ -6,7 +6,7 @@
 
 set -e # abort on error
 set -u # abort on undefined variable
-set +x
+# set +x
 
 source "scripts/kvm_functions.sh"
 echo "LOG: $0 (START) $(date -R)"
@@ -36,21 +36,26 @@ mkdir -p "${VM_DIR}" || true
 
 # Create VMs
 for (( i = 0; i < ${#hosts[@]}; ++i )); do
-   create_vm ${hosts[i]} ${cpus[i]} ${mems[i]} ${roles[i]} ${disks[i]}
+   {
+      create_vm ${hosts[i]} ${cpus[i]} ${mems[i]} ${roles[i]} ${disks[i]}
+   } &
 done
+
+wait # for all VMs to be ready
 
 # Get updated variables
 source "./scripts/variables.sh"
 
 # Update gw network
 if [ "${CREATE_EIP_GATEWAY}" == "True" ]; then
-   # sudo ip address add ${GATW_PUB_IP}/24 dev ${HOST_INTERFACE}
-
    ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${GATW_PRV_IP} <<ENDSSH
-      sudo ip a add ${GATW_PUB_IP}/24 dev eth1
+      # echo "setting public ip at \$(hostname)"
+      sudo ip address add ${GATW_PUB_IP}/24 dev eth1
       sudo ip link set eth1 up
+      echo "public ip set to:"
+      ip a show dev eth1
 ENDSSH
-   # sudo /sbin/iptables -I FORWARD -m state -d ${GATW_PUB_IP} --state NEW,RELATED,ESTABLISHED -j ACCEPT
+
 fi
 
 if [ "${BEHIND_PROXY}" == "True" ]; then

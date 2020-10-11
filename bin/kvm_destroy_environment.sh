@@ -7,13 +7,13 @@
 
 # set -e # abort on error
 # set -u # abort on undefined variable
-set -x
+# set -x
 
 source "scripts/kvm_functions.sh"
 
 # Delete ip forwarding rules
 # sudo ./scripts/kvm_ipforwarding.sh controller off
-sudo ./scripts/kvm_ipforwarding.sh gateway off
+# sudo ./scripts/kvm_ipforwarding.sh gateway off
 
 ### Remove Network
 destroy_network
@@ -40,6 +40,7 @@ if [ -d ./generated ]; then
     pushd ./generated > /dev/null
         rm -f bluedata_install_output.txt* get_public_endpoints.sh ssh_*.sh hpecp_cli.log hpecp.conf
     popd > /dev/null
+    [ -f etc/postcreate.sh.completed ] && rm etc/postcreate.sh.completed
 fi
 
 # Clean downloaded scripts and other generated files too

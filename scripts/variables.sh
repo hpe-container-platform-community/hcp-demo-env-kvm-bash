@@ -11,9 +11,13 @@ else
   was_x_set=0
 fi
 
-source ./etc/kvm_config.sh
 source ./scripts/functions.sh
 source ./scripts/kvm_functions.sh
+
+if [[ "${AD_SERVER_ENABLED}" == "True" ]]; then
+   AD_PRV_IP=$(get_ip_for_vm "ad")
+   AD_PUB_IP=$AD_PRV_IP
+fi
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 [ "$PROJECT_DIR" ] || ( echo "ERROR: PROJECT_DIR is empty" && exit 1 )
@@ -136,24 +140,6 @@ if [[ "$MAPR_CLUSTER2_COUNT" == "3" ]]; then
 else
    MAPR_CLUSTER2_HOSTS_PRV_IPS=()
    MAPR_CLUSTER2_HOSTS_PUB_IPS=()
-fi
-
-if [[ "$AD_SERVER_ENABLED" == "True" ]]; then
-   AD_PRV_IP=$(get_ip_for_vm "ad")
-   AD_PUB_IP=$AD_PRV_IP
-fi
-
-# ALL_HOSTS=$(cat ${HOSTS_FILE} | cut -d' ' -f2)
-# HOSTS=$(echo ${ALL_HOSTS} | sed 's/ /,/g')
-
-# Carry NOPROXY across scripts
-if [ -f ${SYSTEM_PROXY_FILE} ]; then
-   NOPROXY=$(grep "export no_proxy" ${SYSTEM_PROXY_FILE} | cut -d'=' -f2)
-fi
-
-if [ ${BEHIND_PROXY} ]; then
-   WGET_OPTIONS="--no-proxy"
-   EPIC_OPTIONS="${EPIC_OPTIONS} --proxy ${PROXY_URL_WITH_IP} --no-proxy-ips \"${NOPROXY},${GATW_PUB_DNS}\""
 fi
 
 if [[ $was_x_set == 1 ]]; then

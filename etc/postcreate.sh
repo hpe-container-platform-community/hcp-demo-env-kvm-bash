@@ -97,11 +97,17 @@ fi
 # such as site lockdown may have to wait a long time for the installs
 # You can install just spark231 or everything
 
-# print_header "Installing EPIC Spark 23x Image"
-# ./bin/experimental/epic_catalog_image_install_spark23.sh
+print_header "Installing EPIC Spark 23x Image"
+./bin/experimental/epic_catalog_image_install_spark23.sh
 
-# print_header "Installing EPIC Spark 24x Image"
-# ./bin/experimental/epic_catalog_image_install_spark24.sh
+print_header "Installing EPIC Spark 24x Image"
+./bin/experimental/epic_catalog_image_install_spark24.sh
+
+print_header "Add EPIC TensorFlow113CPU Cluster"
+./bin/experimental/epic_catalog_image_install_by_name.sh TensorFlow113CPU
+
+print_header "Add EPIC CentOS 7.x Cluster"
+./bin/experimental/epic_catalog_image_install_by_name.sh "CentOS 7.x"
 
 # uncommment below to install all images
 #./bin/experimental/epic_catalog_image_install_all.sh
@@ -109,8 +115,8 @@ fi
 # print_header "Check EPIC Image status"
 # ./bin/experimental/epic_catalog_image_status.sh
 
-# print_header "Add EPIC Spark 24x Cluster"
-# ./bin/experimental/epic_spark24_cluster_deploy.sh
+print_header "Add EPIC Spark 24x Cluster"
+./bin/experimental/epic_spark24_cluster_deploy.sh
 
 # uncomment to set the EPIC CPU allocation ratio
 # print_header "Set HCP CPU allocation ratio to 2"

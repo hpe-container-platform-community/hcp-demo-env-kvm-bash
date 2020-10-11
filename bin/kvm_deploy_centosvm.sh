@@ -6,6 +6,8 @@ source ./scripts/kvm_functions.sh
 
 set -e # abort on error
 set -u # abort on undefined variable
+# set -x # turn on debugging
+
 # Check arguments
 if ! [ $# -eq 5 ]; then
     echo "Usage: $0 <vm-name> <cpu-count> <memoryGB> <role> <data-disksize>"
@@ -66,22 +68,22 @@ EOF
     echo "instance-id: $1; local-hostname: $1" > $META_DATA
     # Create CD-ROM ISO with cloud-init config
     # echo "$(date -R) Generating ISO for cloud-init..."
-    genisoimage -output "${CI_ISO}" -volid cidata -joliet -r $USER_DATA $META_DATA
+    genisoimage -output "${CI_ISO}" -volid cidata -joliet -r $USER_DATA $META_DATA 2>&1
     # echo "$(date -R) Customizing and installing $1 ..."
     # Create and expand boot-disk "backed by centos cloud image"
-    qemu-img create -f qcow2 -b "${CENTOS_IMAGE_FILE}" "${DISK1}" 
-    qemu-img resize "${DISK1}" 512G 
+    qemu-img create -f qcow2 -b "${CENTOS_IMAGE_FILE}" "${DISK1}" 2>&1
+    qemu-img resize "${DISK1}" 512G 2>&1
     # Create persistent and ephemeral disks
     if [ $5 > 0 ]; then
-      qemu-img create -f qcow2 $DISK2 ${5}G 
-      qemu-img create -f qcow2 $DISK3 ${5}G 
+      qemu-img create -f qcow2 $DISK2 ${5}G 2>&1
+      qemu-img create -f qcow2 $DISK3 ${5}G 2>&1
     else # create dummy disks of 100M, should be removed later in the process #TODO
-      qemu-img create -f qcow2 $DISK2 100M 
-      qemu-img create -f qcow2 $DISK3 100M 
+      qemu-img create -f qcow2 $DISK2 100M 2>&1
+      qemu-img create -f qcow2 $DISK3 100M 2>&1
     fi
 
     # Give access so qemu can read disks
-    sudo setfacl -m u:qemu:rx "${VM_DIR}"/"${1}"
+    sudo setfacl -m u:qemu:rx "${VM_DIR}"/"${1}" 2>&1
 
     # add public interface if gateway
     public_int=""
@@ -123,16 +125,16 @@ EOF
     echo
     # Eject cdrom
     # echo "$(date -R) Cleaning up cloud-init..."
-    sudo virsh change-media "${1}" sda --eject --config
+    sudo virsh change-media "${1}" sda --eject --config 2>&1
     # Remove the unnecessary cloud init files
-    sudo rm -f "${USER_DATA}" "${CI_ISO}"
+    sudo rm -f "${USER_DATA}" "${CI_ISO}" 2>&1
     # Remove if data disk not needed
     if [ ${5} -eq 0 ]; then
-      sudo virsh detach-disk --domain ${1} vdb --persistent --config --live
-      sudo virsh detach-disk --domain ${1} vdc --persistent --config --live
+      sudo virsh detach-disk --domain ${1} vdb --persistent --config --live 2>&1
+      sudo virsh detach-disk --domain ${1} vdc --persistent --config --live 2>&1
     fi
     # Set to autostart with host
-    sudo virsh autostart ${1}
+    sudo virsh autostart ${1} 2>&1
     # Completed
     echo "$1 $IP $4" >> "${HOSTS_FILE}"
 

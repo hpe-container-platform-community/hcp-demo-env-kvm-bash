@@ -15,12 +15,10 @@ source "scripts/variables.sh"
 
 echo "No proxy set to: ${NOPROXY}"
 
-hosts=$(<${HOSTS_FILE})
+host_ips=$(grep "ip-address" /var/lib/libvirt/dnsmasq/"${BRIDGE}".status | awk '{print $2}' | sed -e s/\"//g -e s/,//)
 
-for host in ${hosts[@]};do
+for ip in ${host_ips[@]}; do
 {
-# while IFS= read -r host; do
-    ip=$(echo ${host} | awk ' { print $2 } ' )
     echo "Updating ${ip} for proxy settings"
 
     proxy_sh=$(cat <<EOF
@@ -97,7 +95,7 @@ sudo yum clean all -q
 # sudo yum --enablerepo=updates clean metadata -q
 
 EOF
-}&
+} &
 
 done # < ${HOSTS_FILE}
 
