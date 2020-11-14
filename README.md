@@ -1,7 +1,10 @@
 # Deploy Ezmeral Container Platform on KVM
 
+Please consider this as a work-in-progress. Contributions, recommendations, pull requests are always welcomed.
+This worked in our demo lab with CentOS 8 single machine deployment. Complex virtual network and clustering is not available yet (please see to-do below).
+
 ## What & Why
-To re-utilize scripts and processes by https://github.com/hpe-container-platform-community/hcp-demo-env-aws-terraform/
+To re-utilize scripts and processes by https://github.com/hpe-container-platform-community/hcp-demo-env-aws-terraform/, enabling a quick deployment opportunity for a demo environemnt for HPE Ezmeral Container Platform.
 
 ## Pre-requisites
 - CentOS/RHEL 7+ (tested on CentOS 8.2 Host)
@@ -90,7 +93,7 @@ vi etc/kvm_config.sh
 
 > <code>mems=(65536 32768 65536 65536 65536)</code>
 
-<pre># assign roles (for proper configuration script)</pre>
+<pre># assign roles (not all roles implemented yet)</pre>
 <pre># possible roles: controller gateway worker ad rdp mapr1 mapr2</pre>
 > <code>roles=('controller' 'gateway' 'worker' 'worker' 'worker')</code>
 
@@ -135,9 +138,9 @@ Open a browser to gateway (if CREATE_EIP_GATEWAY enabled an ip forwarding rule t
 
 - [ ] Optimizations (less reboots, less modifications to source scripts etc)
 
-- [ ] Enable local YUM repo (nfs to avoid downloading packages)
+- [ ] Enable local YUM repo (use nfs to avoid downloading packages if possible)
 
-- [ ] Enable mounted image catalog (nfs to avoid copying catalog images)
+- [ ] Enable mounted image catalog (nfs to avoid copying catalog images if possible)
 
 # Troubleshooting 
 
